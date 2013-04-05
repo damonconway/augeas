@@ -22,13 +22,13 @@ The <Test_Awstats> file contains various examples and tests.
 module Awstats =
 autoload xfm
 
-let comment  = Util.comment_generic /[ \t]*[#][ \t]*/ "# "
-let empty    = Util.empty
-let eol      = Util.eol
-let equal    = Sep.equal
-let kvl      = Build.key_value_line
-let space    = Sep.space
-let word     = Rx.word
+let comment = Util.comment_generic /[ \t]*[#][ \t]*/ "#"
+let empty   = Util.empty
+let eol     = Util.eol
+let equal   = Sep.equal
+let kvl     = Build.key_value_line
+let space   = Sep.space
+let word    = Rx.word
 
 (* Space separated with quotes
   KEY "VALUE" *)

@@ -22,6 +22,8 @@ test Awstats.lns get default_awstats =
     { }
     { "#comment" = "# Default: W" }
     { "LogType" = "W" }
+    { }
+    { "Include" = "\"/etc/awstats/awstats.conf.local\"" }
 
 (* Test: Awstats.lns *)
 test Awstats.lns put default_awstats after

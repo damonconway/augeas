@@ -1,49 +1,38 @@
 (*
-Module: Test_Sysctl
-Provides unit tests and examples for the <Sysctl> lens.
+Module: Test_Awstats
+Provides unit tests and examples for the <Awstats> lens.
 *)
 
-module Test_sysctl =
+module Test_awstats =
 
-(* Variable: default_sysctl *)
-let default_sysctl = "# Kernel sysctl configuration file
-# Controls IP packet forwarding
-net.ipv4.ip_forward = 0
+(* Variable: default_awstats *)
+let default_awstats = "# Example: \"/pathtotools/logresolvemerge.pl *.log |\"
+LogFile=\"/var/log/httpd/access_log\"
 
-net.ipv4.conf.default.rp_filter = 1
-net.ipv4.conf.default.accept_source_route = \t0
-kernel.sysrq = 0
+# Default: W
+LogType=W
 
-; Semicolon comments are also allowed
-net.ipv4.tcp_mem = \t393216 524288 786432
+Include \"/etc/awstats/awstats.conf.local\"
 "
 
-(* Test: Sysctl.lns *)
-test Sysctl.lns get default_sysctl =
-{ "#comment" = "Kernel sysctl configuration file" }
-{ "#comment" = "Controls IP packet forwarding"}
-{ "net.ipv4.ip_forward" = "0" }
-{ }
-{ "net.ipv4.conf.default.rp_filter" = "1" }
-{ "net.ipv4.conf.default.accept_source_route" = "0" }
-{ "kernel.sysrq" = "0" }
-{ }
-{ "#comment" = "Semicolon comments are also allowed" }
-{ "net.ipv4.tcp_mem" = "393216 524288 786432" }
+(* Test: Awstats.lns *)
+test Awstats.lns get default_awstats =
+    { "#comment" = "# Example: \"/pathtotools/logresolvemerge.pl *.log |\"" }
+    { "LogFile" = "\"/var/log/httpd/access_log\"" }
+    { }
+    { "#comment" = "# Default: W" }
+    { "LogType" = "W" }
 
-(* Test: Sysctl.lns *)
-test Sysctl.lns put default_sysctl after
-set "net.ipv4.ip_forward" "1" ;
-rm "net.ipv4.conf.default.rp_filter" ;
-rm "net.ipv4.conf.default.accept_source_route" ;
-rm "kernel.sysrq"
-= "# Kernel sysctl configuration file
-# Controls IP packet forwarding
-net.ipv4.ip_forward = 1
+(* Test: Awstats.lns *)
+test Awstats.lns put default_awstats after
+    set "LogFile" "\"/var/log/httpd/%YYYY-2%MM-2%DD-2\"" ;
+    rm "LogType"
+  = "# Example: \"/pathtotools/logresolvemerge.pl *.log |\"
+LogFile=\"/var/log/httpd/%YYYY-2%MM-2%DD-2\"
 
+# Default: W
 
-; Semicolon comments are also allowed
-net.ipv4.tcp_mem = \t393216 524288 786432
+Include \"/etc/awstats/awstats.conf.local\"
 "
 
 (* Local Variables: *)

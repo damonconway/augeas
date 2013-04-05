@@ -1,8 +1,8 @@
 (*
 Module: Awstats
-Parses /etc/awstats.conf and /etc/awstats.d/*
+Parses /etc/awstats.*
 
-Author: David Lutterkort <lutter@redhat.com>
+Author: Damon Conway <damon.conway@alchemysystems.com>
 
 About: Reference
 
@@ -13,7 +13,7 @@ About: Lens Usage
 To be documented
 
 About: Configuration files
-This lens applies to /etc/awstats.conf and /etc/awstats.d/*. See <filter>.
+This lens applies to /etc/awstats.*.  See <filter>.
 
 About: Examples
 The <Test_Awstats> file contains various examples and tests.
@@ -22,7 +22,7 @@ The <Test_Awstats> file contains various examples and tests.
 module Awstats =
 autoload xfm
 
-let comment = Util.comment_generic /[ \t]*[#][ \t]*/ "#"
+let comment = Util.comment_generic /[ \t]*#[ \t]*/ "# "
 let empty   = Util.empty
 let eol     = Util.eol
 let equal   = Sep.equal
@@ -218,15 +218,16 @@ let eq_sep_list = "AddDataArrayMonthStats"
 | "UseFramesWhenCGI"
 | "WarningMessages"
 
+(* View: entry *)
+let entry = ( sp_sep_quot (sp_sep_quot_list)
+| eq_sep_quot (eq_sep_quot_list)
+| eq_sep (eq_sep_list))
+
 (* Variable: filter *)
 let filter = incl "/etc/awstats/awstats.*"
 
 (* View: lns
 The awstats lens *)
-let lns = ( empty
-| comment
-| sp_sep_quot (sp_sep_quot_list)
-| eq_sep_quot (eq_sep_quot_list)
-| eq_sep (eq_sep_list))*
+let lns = ( empty | comment | entry )*
 
 let xfm = transform lns filter

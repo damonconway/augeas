@@ -8,7 +8,7 @@ module Test_awstats =
 (* Variable: default_awstats *)
 let default_awstats = "#-----------------------------------------------------------------------------
 # Example: \"/pathtotools/logresolvemerge.pl *.log |\"
-LogFile=\"/var/log/httpd/access_log\"
+LogFile=\"/var/log/httpd/access_log\"   # Test Comment
 
 # Default: W
 LogType=W
@@ -18,11 +18,13 @@ Include \"/etc/awstats/awstats.conf.local\"
 
 (* Test: Awstats.lns *)
 test Awstats.lns get default_awstats =
-    { "#comment" = "#-----------------------------------------------------------------------------" }
-    { "#comment" = "# Example: \"/pathtotools/logresolvemerge.pl *.log |\"" }
-    { "LogFile" = "\"/var/log/httpd/access_log\"" }
+    { "#comment" = "-----------------------------------------------------------------------------" }
+    { "#comment" = "Example: \"/pathtotools/logresolvemerge.pl *.log |\"" }
+    { "LogFile" = "\"/var/log/httpd/access_log\""
+      { "#comment" = "Test Comment" }
+    }
     { }
-    { "#comment" = "# Default: W" }
+    { "#comment" = "Default: W" }
     { "LogType" = "W" }
     { }
     { "Include" = "\"/etc/awstats/awstats.conf.local\"" }
@@ -33,7 +35,7 @@ test Awstats.lns put default_awstats after
     rm "LogType"
   = "#-----------------------------------------------------------------------------
 # Example: \"/pathtotools/logresolvemerge.pl *.log |\"
-LogFile=\"/var/log/httpd/%YYYY-2%MM-2%DD-2\"
+LogFile=\"/var/log/httpd/%YYYY-2%MM-2%DD-2\"   # Test Comment
 
 # Default: W
 

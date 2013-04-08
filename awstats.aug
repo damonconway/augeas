@@ -18,7 +18,6 @@ This lens applies to /etc/awstats.*.  See <filter>.
 About: Examples
 The <Test_Awstats> file contains various examples and tests.
 *)
-
 module Awstats =
 autoload xfm
 
@@ -31,76 +30,37 @@ let indent         = Util.indent
 let space          = Sep.space
 let word           = /[^ \t\n]+/
 let qword          = /"[^ \t\n]+"/
+(* Shamelessly stolen from raphink's Modprobe *)
 let sto_to_eol     = /(([^# \t\n\\\\][^#\n\\\\]*[ \t]*\\\\[ \t]*\n[ \t]*)*([^# \t\n\\\\][^#\n\\\\]*[^# \t\n\\\\]|[^# \t\n\\\\])|[^# \t\n\\\\])/
 
-(* Space separated with quotes
+(* Space separated
   KEY "VALUE" *)
-let sp_sep_quot (kw:regexp) = 
+let sp_sep (kw:regexp) = 
   let value = store sto_to_eol in 
     [ key kw . space . value . comment_or_eol ]
 
-(*
-  Build.key_value_line_comment in
-  [ (key kw)  space  (store qword) comment_or_eol ]
-  let value = store qword in 
-    [ key kw . space . value . eol ]
-*)
-
 (* Equal separated with quotes
   KEY="VALUE" *)
-let eq_sep_quot (kw:regexp) = 
-  let value = store qword in 
-    [ key kw . equal . value . eol ]
-
-(* Equal separated without quotes
-  KEY=VALUE *)
-let eq_sep (kw:regexp) = 
-  let value = store word in 
-    [ key kw . equal . value . eol ]
-
-(* List of space separated with quotes keys *)
-let sp_sep_quot_list = "Include"
+let simple_entry (kw:regexp) = 
+  let value = store sto_to_eol in 
+    [ key kw . equal . value . comment_or_eol ]
 
 (* List of equal separated with quotes keys *)
-let eq_sep_quot_list = "LogFile"
-| "LogSeparator"
-| "SiteDomain"
-| "HostAliases"
-| "DirData"
-| "DirCgi"
-| "DirIcons"
-| "DNSStaticCacheFile"
-| "DNSLastUpdateCacheFile"
-| "SkipDnsLookupsFor"
+let simple_list = "AddDataArrayMonthStats"
+| "AddDataArrayShowDaysOfMonthStats"
+| "AddDataArrayShowDaysOfWeekStats"
+| "AddDataArrayShowHoursStats"
+| "AllowAccessFromWebToAuthenticatedUsersOnly"
 | "AllowAccessFromWebToFollowingAuthenticatedUsers"
 | "AllowAccessFromWebToFollowingIPAddresses"
-| "DefaultFile"
-| "SkipHosts"
-| "SkipUserAgents"
-| "SkipFiles"
-| "SkipReferrersBlackList"
-| "OnlyHosts"
-| "OnlyUserAgents"
-| "OnlyUsers"
-| "OnlyFiles"
-| "NotPageList"
-| "ValidHTTPCodes"
-| "ValidSMTPCodes"
-| "URLQuerySeparators"
-| "URLWithQueryWithOnlyFollowingParameters"
-| "URLWithQueryWithoutFollowingParameters"
-| "ErrorMessages"
-| "WrapperScript"
-| "MiscTrackerUrl"
-| "Lang"
-| "DirLang"
-| "ShowFlagLinks"
-| "UseHTTPSLinkForUrl"
-| "HTMLHeadSection"
-| "HTMLEndSection"
-| "Logo"
-| "LogoLink"
-| "StyleSheet"
+| "AllowFullYearView"
+| "AllowToUpdateStatsFromBrowser"
+| "ArchiveLogRecords"
+| "AuthenticatedUsersNotCaseSensitive"
+| "BarHeight"
+| "BarWidth"
+| "BuildHistoryFormat"
+| "BuildReportFormat"
 | "color_Background"
 | "color_TableBGTitle"
 | "color_TableTitle"
@@ -122,32 +82,29 @@ let eq_sep_quot_list = "LogFile"
 | "color_s"
 | "color_e"
 | "color_x"
-
-(* List of equal separated without quotes keys *)
-let eq_sep_list = "AddDataArrayMonthStats"
-| "AddDataArrayShowDaysOfMonthStats"
-| "AddDataArrayShowDaysOfWeekStats"
-| "AddDataArrayShowHoursStats"
-| "AllowAccessFromWebToAuthenticatedUsersOnly"
-| "AllowFullYearView"
-| "AllowToUpdateStatsFromBrowser"
-| "ArchiveLogRecords"
-| "AuthenticatedUsersNotCaseSensitive"
-| "BarHeight"
-| "BarWidth"
-| "BuildHistoryFormat"
-| "BuildReportFormat"
 | "CreateDirDataIfNotExists"
 | "DebugMessages"
 | "DecodeUA"
+| "DefaultFile"
 | "DetailedReportsOnNewWindows"
+| "DirCgi"
+| "DirData"
+| "DirIcons"
+| "DirLang"
+| "DNSLastUpdateCacheFile"
 | "DNSLookup"
+| "DNSStaticCacheFile"
 | "EnableLockForUpdate"
+| "ErrorMessages"
 | "Expires"
 | "ExtraTrackedRowsLimit"
 | "FirstDayOfWeek"
+| "HostAliases"
+| "HTMLHeadSection"
+| "HTMLEndSection"
 | "IncludeInternalLinksInOriginSection"
 | "KeepBackupOfHistoricFiles"
+| "Lang"
 | "LevelForBrowsersDetection"
 | "LevelForFileTypesDetection"
 | "LevelForKeywordsDetection"
@@ -157,7 +114,11 @@ let eq_sep_list = "AddDataArrayMonthStats"
 | "LevelForSearchEnginesDetection"
 | "LevelForWormsDetection"
 | "LogFormat"
+| "LogFile"
+| "LogSeparator"
 | "LogType"
+| "Logo"
+| "LogoLink"
 | "MaxLengthOfShownURL"
 | "MaxNbOfBrowsersShown"
 | "MaxNbOfDomain"
@@ -189,7 +150,13 @@ let eq_sep_list = "AddDataArrayMonthStats"
 | "MinHitRobot"
 | "MinHitScreenSize"
 | "MinHitWindowSize"
+| "MiscTrackerUrl"
 | "NbOfLinesForCorruptedLog"
+| "NotPageList"
+| "OnlyHosts"
+| "OnlyFiles"
+| "OnlyUsers"
+| "OnlyUserAgents"
 | "PurgeLogFile"
 | "SaveDatabaseFilesWithPermissionsForEveryone"
 | "ShowAuthenticatedUsers"
@@ -203,6 +170,7 @@ let eq_sep_list = "AddDataArrayMonthStats"
 | "ShowEMailSenders"
 | "ShowFileSizesStats"
 | "ShowFileTypesStats"
+| "ShowFlagLinks"
 | "ShowHostsStats"
 | "ShowHoursStats"
 | "ShowHTTPErrorsStats"
@@ -221,20 +189,33 @@ let eq_sep_list = "AddDataArrayMonthStats"
 | "ShowSMTPErrorsStats"
 | "ShowSummary"
 | "ShowWormsStats"
+| "SiteDomain"
+| "SkipDnsLookupsFor"
+| "SkipFiles"
+| "SkipHosts"
+| "SkipReferrersBlackList"
+| "SkipUserAgents"
+| "StyleSheet"
 | "URLNotCaseSensitive"
 | "URLReferrerWithQuery"
+| "URLQuerySeparators"
 | "URLWithAnchor"
 | "URLWithQuery"
+| "URLWithQueryWithOnlyFollowingParameters"
+| "URLWithQueryWithoutFollowingParameters"
 | "UseFramesWhenCGI"
+| "UseHTTPSLinkForUrl"
+| "ValidHTTPCodes"
+| "ValidSMTPCodes"
 | "WarningMessages"
+| "WrapperScript"
 
 (* View: entry *)
-let entry = ( sp_sep_quot (sp_sep_quot_list)
-| eq_sep_quot (eq_sep_quot_list)
-| eq_sep (eq_sep_list))
+let entry = ( sp_sep /Include/ | simple_entry (simple_list) )
 
 (* Variable: filter *)
-let filter = incl "/etc/awstats/awstats.*"
+let filter = incl "/etc/awstats/*"
+           . Util.stdexcl
 
 (* View: lns
 The awstats lens *)

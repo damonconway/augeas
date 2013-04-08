@@ -23,9 +23,11 @@ autoload xfm
 
 let comment        = Util.comment_generic /^[ \t]*#[ \t]*/ "# "
 let comment_or_eol = Util.comment_or_eol
+let op_delim (op:string) = del (/[ \t]*/ . op . /[ \t]*/) (" " . op . " ")
 let empty          = Util.empty
 let eol            = Util.eol
-let equal          = Sep.equal
+(* let equal          = Sep.equal *)
+let equal          = op_delim "="
 let indent         = Util.indent
 let space          = Sep.space
 let word           = /[^ \t\n]+/
@@ -39,8 +41,10 @@ let sp_sep (kw:regexp) =
   let value = store sto_to_eol in 
     [ key kw . space . value . comment_or_eol ]
 
-(* Equal separated with quotes
-  KEY="VALUE" *)
+(* Equal separated
+  KEY="VALUE"
+  KEY=VALUE
+*)
 let simple_entry (kw:regexp) = 
   let value = store sto_to_eol in 
     [ key kw . equal . value . comment_or_eol ]
@@ -190,7 +194,7 @@ let simple_list = "AddDataArrayMonthStats"
 | "ShowSummary"
 | "ShowWormsStats"
 | "SiteDomain"
-| "SkipDnsLookupsFor"
+| "SkipDNSLookupFor"
 | "SkipFiles"
 | "SkipHosts"
 | "SkipReferrersBlackList"

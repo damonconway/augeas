@@ -21,12 +21,13 @@ The <Test_Awstats> file contains various examples and tests.
 module Awstats =
 autoload xfm
 
+(* Define a delimiter string *)
+let op_delim (op:string) = del (/[ \t]*/ . op . /[ \t]*/) (" " . op . " ")
+
 let comment        = Util.comment_generic /^[ \t]*#[ \t]*/ "# "
 let comment_or_eol = Util.comment_or_eol
-let op_delim (op:string) = del (/[ \t]*/ . op . /[ \t]*/) (" " . op . " ")
 let empty          = Util.empty
 let eol            = Util.eol
-(* let equal          = Sep.equal *)
 let equal          = op_delim "="
 let indent         = Util.indent
 let space          = Sep.space

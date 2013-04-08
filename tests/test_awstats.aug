@@ -14,6 +14,9 @@ LogFile=\"/var/log/httpd/access_log\"   # Test Comment
 LogType=W
 
 Include \"/etc/awstats/awstats.conf.local\"
+
+# Stats by countries/domains
+MaxNbOfDomain = 10
 "
 
 (* Test: Awstats.lns *)
@@ -28,6 +31,9 @@ test Awstats.lns get default_awstats =
     { "LogType" = "W" }
     { }
     { "Include" = "\"/etc/awstats/awstats.conf.local\"" }
+    { }
+    { "#comment" = "Stats by countries/domains" }
+    { "MaxNbOfDomain" = "10" }
 
 (* Test: Awstats.lns *)
 test Awstats.lns put default_awstats after
@@ -40,6 +46,9 @@ LogFile=\"/var/log/httpd/%YYYY-2%MM-2%DD-2\"   # Test Comment
 # Default: W
 
 Include \"/etc/awstats/awstats.conf.local\"
+
+# Stats by countries/domains
+MaxNbOfDomain = 10
 "
 
 (* Local Variables: *)

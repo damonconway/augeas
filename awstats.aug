@@ -22,30 +22,40 @@ The <Test_Awstats> file contains various examples and tests.
 module Awstats =
 autoload xfm
 
-let comment = Util.comment_generic /[ \t]*#[ \t]*/ "# "
-let empty   = Util.empty
-let eol     = Util.eol
-let equal   = Sep.equal
-let kvl     = Build.key_value_line
-let space   = Sep.space
-let word    = Rx.word
+let comment        = Util.comment_generic /^[ \t]*#[ \t]*/ "# "
+let comment_or_eol = Util.comment_or_eol
+let empty          = Util.empty
+let eol            = Util.eol
+let equal          = Sep.equal
+let indent         = Util.indent
+let space          = Sep.space
+let word           = /[^ \t\n]+/
+let qword          = /"[^ \t\n]+"/
+let sto_to_eol     = /(([^# \t\n\\\\][^#\n\\\\]*[ \t]*\\\\[ \t]*\n[ \t]*)*([^# \t\n\\\\][^#\n\\\\]*[^# \t\n\\\\]|[^# \t\n\\\\])|[^# \t\n\\\\])/
 
 (* Space separated with quotes
   KEY "VALUE" *)
 let sp_sep_quot (kw:regexp) = 
-  let value = store /"[^ \t\n]+"/ in 
+  let value = store sto_to_eol in 
+    [ key kw . space . value . comment_or_eol ]
+
+(*
+  Build.key_value_line_comment in
+  [ (key kw)  space  (store qword) comment_or_eol ]
+  let value = store qword in 
     [ key kw . space . value . eol ]
+*)
 
 (* Equal separated with quotes
   KEY="VALUE" *)
 let eq_sep_quot (kw:regexp) = 
-  let value = store /"[^ \t\n]+"/ in 
+  let value = store qword in 
     [ key kw . equal . value . eol ]
 
 (* Equal separated without quotes
   KEY=VALUE *)
 let eq_sep (kw:regexp) = 
-  let value = store /[^ \t\n]+/ in 
+  let value = store word in 
     [ key kw . equal . value . eol ]
 
 (* List of space separated with quotes keys *)
@@ -113,7 +123,7 @@ let eq_sep_quot_list = "LogFile"
 | "color_e"
 | "color_x"
 
-(* List of equal separated with quotes keys *)
+(* List of equal separated without quotes keys *)
 let eq_sep_list = "AddDataArrayMonthStats"
 | "AddDataArrayShowDaysOfMonthStats"
 | "AddDataArrayShowDaysOfWeekStats"
@@ -123,8 +133,8 @@ let eq_sep_list = "AddDataArrayMonthStats"
 | "AllowToUpdateStatsFromBrowser"
 | "ArchiveLogRecords"
 | "AuthenticatedUsersNotCaseSensitive"
-| "BarHeight  "
-| "BarWidth   "
+| "BarHeight"
+| "BarWidth"
 | "BuildHistoryFormat"
 | "BuildReportFormat"
 | "CreateDirDataIfNotExists"
@@ -149,36 +159,36 @@ let eq_sep_list = "AddDataArrayMonthStats"
 | "LogFormat"
 | "LogType"
 | "MaxLengthOfShownURL"
-| "MaxNbOfBrowsersShown "
-| "MaxNbOfDomain "
-| "MaxNbOfDownloadsShown "
-| "MaxNbOfEMailsShown "
-| "MaxNbOfHostsShown "
-| "MaxNbOfKeyphrasesShown "
-| "MaxNbOfKeywordsShown "
-| "MaxNbOfLoginShown "
-| "MaxNbOfOsShown "
-| "MaxNbOfPageShown "
-| "MaxNbOfRefererShown "
-| "MaxNbOfRobotShown "
-| "MaxNbOfScreenSizesShown "
-| "MaxNbOfWindowSizesShown "
+| "MaxNbOfBrowsersShown"
+| "MaxNbOfDomain"
+| "MaxNbOfDownloadsShown"
+| "MaxNbOfEMailsShown"
+| "MaxNbOfHostsShown"
+| "MaxNbOfKeyphrasesShown"
+| "MaxNbOfKeywordsShown"
+| "MaxNbOfLoginShown"
+| "MaxNbOfOsShown"
+| "MaxNbOfPageShown"
+| "MaxNbOfRefererShown"
+| "MaxNbOfRobotShown"
+| "MaxNbOfScreenSizesShown"
+| "MaxNbOfWindowSizesShown"
 | "MaxRowsInHTMLOutput"
 | "MetaRobot"
-| "MinHitBrowser "
-| "MinHitDomain  "
-| "MinHitDownloads "
-| "MinHitEMail   "
-| "MinHitFile    "
-| "MinHitHost    "
-| "MinHitKeyphrase "
-| "MinHitKeyword "
-| "MinHitLogin   "
-| "MinHitOs      "
-| "MinHitRefer   "
-| "MinHitRobot   "
-| "MinHitScreenSize "
-| "MinHitWindowSize "
+| "MinHitBrowser"
+| "MinHitDomain"
+| "MinHitDownloads"
+| "MinHitEMail"
+| "MinHitFile"
+| "MinHitHost"
+| "MinHitKeyphrase"
+| "MinHitKeyword"
+| "MinHitLogin"
+| "MinHitOs"
+| "MinHitRefer"
+| "MinHitRobot"
+| "MinHitScreenSize"
+| "MinHitWindowSize"
 | "NbOfLinesForCorruptedLog"
 | "PurgeLogFile"
 | "SaveDatabaseFilesWithPermissionsForEveryone"
@@ -228,6 +238,6 @@ let filter = incl "/etc/awstats/awstats.*"
 
 (* View: lns
 The awstats lens *)
-let lns = ( empty | comment | entry )*
+let lns = (empty | comment | entry)*
 
 let xfm = transform lns filter
